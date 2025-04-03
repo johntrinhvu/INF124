@@ -1,5 +1,6 @@
 INF 124 Group 2
-**Members:
+
+-Members:
 * John Vu
 * Stephanie Sam
 * Alexis Flores
