@@ -1,4 +1,4 @@
-INF 124 Group 2
+LearnXR (INF 124 Group 2)
 
 -Members:
 * John Vu
