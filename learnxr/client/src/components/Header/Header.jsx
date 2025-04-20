@@ -5,6 +5,5 @@ export default function Header() {
     <div>
       <h1>header</h1>
     </div>
-
   );
 };
