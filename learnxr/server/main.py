@@ -15,8 +15,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# client = MongoClient(os.getenv("MONGO_URI"))
-# db = client.learnxr
+client = MongoClient(os.getenv("MONGO_URI"))
+db = client.learnxr
 
 @app.get("/")
 def read_root():
