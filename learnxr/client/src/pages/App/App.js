@@ -1,9 +1,10 @@
 import './App.css';
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Header from "../../components/Header/Header.jsx";
+import Landing from "../Landing/Landing.jsx";
 
-function App() {
+export default function App() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -14,9 +15,10 @@ function App() {
 
   return (
     <div className="App">
+      <Header />
       <h1>{message}</h1>
+      <Landing />
     </div>
   );
-}
+};
 
-export default App;
