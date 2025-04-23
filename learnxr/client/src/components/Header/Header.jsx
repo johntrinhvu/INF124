@@ -2,8 +2,8 @@ import "./Header.css";
 
 export default function Header() {
   return (
-    <div>
-      <h1>header</h1>
+    <div className="">
+      <h3>Header</h3>
     </div>
   );
 };
