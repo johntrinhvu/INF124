@@ -1,6 +1,6 @@
-import "./Login.css";
+import "./SignIn.css";
 
-export default function Login() {
+export default function SignIn() {
   return (
     <div className="pt-24">
       <h1>Login</h1>
