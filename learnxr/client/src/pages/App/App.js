@@ -1,4 +1,5 @@
 import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Header from "../../components/Header/Header.jsx";
@@ -15,9 +16,12 @@ export default function App() {
 
   return (
     <div className="App">
-      <Header />
-      <h1>{message}</h1>
-      <Landing />
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Landing />} />
+        </Routes>
+      </Router>
     </div>
   );
 };
