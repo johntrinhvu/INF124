@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <div className="z-40 flex justify-center">
       <nav className="rounded-2xl fixed px-4 h-[52px] items-center top-0 mt-4 w-9/12 max-w-[1070px] flex justify-between bg-[#1C1C41]">
-        <!-- Left Section -->
+        {/* Left Section */}
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
             <img src={Logo} alt="Logo" className="w-10 h-10" />
@@ -15,7 +15,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <!-- Right Section -->
+        {/* Right Section */}
         <div>
           <button>
             <FaBars className="w-5 h-5 text-[#6B6DB6] pt-1"/>
