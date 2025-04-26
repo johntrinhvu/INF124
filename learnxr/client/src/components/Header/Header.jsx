@@ -20,7 +20,7 @@ export default function Header() {
           <button className="hidden">
             <FaBars className="w-5 h-5 text-[#6B6DB6] pt-1"/>
           </button>
-          <div className="flex border border-2 rounded-md border-[#10103D]">
+          <div className="flex rounded-md border-[#10103D]">
             <Link to="/signin" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
               Sign In
             </Link>
