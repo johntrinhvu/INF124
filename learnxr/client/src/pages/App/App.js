@@ -5,6 +5,7 @@ import axios from 'axios';
 import Header from "../../components/Header/Header.jsx";
 import Landing from "../Landing/Landing.jsx";
 import SignIn from "../SignIn/SignIn.jsx";
+import SignUp from '../SignUp/SignUp.jsx';
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -22,6 +23,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/signin" element={<SignIn />}/>
+          <Route path="/signup" element={<SignUp />}/>
         </Routes>
       </Router>
     </div>
