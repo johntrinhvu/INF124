@@ -5,6 +5,7 @@ export default function Landing() {
   return (
     <div className="landing-page min-h-screen bg-gradient-to-r from-[#0a0a23] to-[#1a1a3d] text-white font-sans">
       <div className="flex flex-col lg:flex-row items-center justify-between px-20 py-20">
+        {/*Will do, leave to johnnie*/}
 
 
 
