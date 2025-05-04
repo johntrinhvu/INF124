@@ -14,6 +14,7 @@ export default function Header() {
             <h1 className="text-white pb-0.5 font-bold">LearnXR</h1>
           </Link>
         </div>
+        
 
         {/* Right Section */}
         <div>
@@ -26,6 +27,10 @@ export default function Header() {
             </Link>
             <Link to="/signup" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
               Sign Up
+            </Link>
+            {/* New Dashboard Button */}
+            <Link to="/dashboard" className="text-white text-sm px-3 py-1 border border-[#10103D] bg-[#6B6DB6] rounded-sm hover:bg-[#7b7dc0] transition">
+              Dashboard
             </Link>
           </div>
         </div>

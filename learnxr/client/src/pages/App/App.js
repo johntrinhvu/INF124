@@ -6,6 +6,7 @@ import Header from "../../components/Header/Header.jsx";
 import Landing from "../Landing/Landing.jsx";
 import SignIn from "../SignIn/SignIn.jsx";
 import SignUp from '../SignUp/SignUp.jsx';
+import Dashboard from '../Dashboard/Dashboard.jsx';
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/signin" element={<SignIn />}/>
           <Route path="/signup" element={<SignUp />}/>
+          <Route path="/dashboard" element={<Dashboard />}/>
         </Routes>
       </Router>
     </div>
