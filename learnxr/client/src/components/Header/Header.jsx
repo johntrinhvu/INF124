@@ -20,25 +20,25 @@ export default function Header() {
         {/* Right Section */}
         <div>
           <button className="hidden">
-            <FaBars className="w-5 h-5 text-[#6B6DB6] pt-1"/>
+            <FaBars className="w-5 h-5 text-[#6B6DB6] pt-1" />
           </button>
           <div className="flex items-center gap-2">
-          <div className="flex rounded-md border-[#10103D]">
-            <Link to="/signin" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
-              Sign In
-            </Link>
-            <Link to="/signup" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
-              Sign Up
-            </Link>
-          </div>
-         
-          <Link to= "/profile">
-            <img src = {GenericAvatar}
-            alt = "user"
-            className = "w-9 h-9 rounded-full border-2 border-[#ACAE5] hover:opacity-90x"
-            />
+            <div className="flex rounded-md border-[#10103D]">
+              <Link to="/signin" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
+                Sign In
+              </Link>
+              <Link to="/signup" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
+                Sign Up
+              </Link>
+            </div>
 
-          </Link>
+            <Link to="/profile">
+              <img src={GenericAvatar}
+                alt="user"
+                className="w-9 h-9 rounded-full border-2 border-[#ACAE5] hover:opacity-90x"
+              />
+
+            </Link>
           </div>
         </div>
       </nav>

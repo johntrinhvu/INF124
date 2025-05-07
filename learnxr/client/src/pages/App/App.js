@@ -8,6 +8,8 @@ import SignIn from "../SignIn/SignIn.jsx";
 import SignUp from '../SignUp/SignUp.jsx';
 import Dashboard from '../Dashboard/Dashboard.jsx';
 import Profile from '../Profile/Profile.jsx';
+import FAQ from '../FAQ/FAQ.jsx';
+import Settings from '../Settings/Settings.jsx';
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -28,6 +30,8 @@ export default function App() {
           <Route path="/signup" element={<SignUp />}/>
           <Route path="/dashboard" element={<Dashboard />}/>
           <Route path="/profile" element={<Profile />}/>
+          <Route path= "/faq" element = {<FAQ/>}/>
+          <Route path = "/settings" element= {<Settings/>}/>
         </Routes>
       </Router>
     </div>

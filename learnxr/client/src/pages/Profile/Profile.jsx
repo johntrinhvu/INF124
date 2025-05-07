@@ -1,7 +1,7 @@
 import './Profile.css';
 import GenericAvatar from "../../assets/GenericAvatar.png";
 import AboutCard from "../../components/ProfileCards/AboutCard";
-
+import { Link } from "react-router-dom";
 import QuizAccuracyCard from "../../components/DashboardCards/QuizAccuracyCard/QuizAccuracyCard";
 import QuizzesCompletedCard from '../../components/DashboardCards/QuizzesCompletedCard/QuizzesCompletedCard';
 import CurrentStreakCard from '../../components/DashboardCards/CurrentStreakCard/CurrentStreakCard';
@@ -25,8 +25,8 @@ export default function Profile() {
                     <h2 className="text-xl font-semibold">John Doe</h2>
                     <p className="text-sm">Role: Student</p>
                     <p className="text-sm">Joined Date: 2025</p>
-                    <button className="border border-white text-white py-1 px-4 w-full text-sm">FAQ</button>
-                    <button className="border border-white text-white py-1 px-4 w-full text-sm">Account Settings</button>
+                    <Link to= "/faq" className="border border-white text-white py-1 px-4 w-full text-sm">FAQ</Link>
+                    <Link to= "/acct-settings" className="border border-white text-white py-1 px-4 w-full text-sm">Account Settings</Link>
                 </div>
 
 
