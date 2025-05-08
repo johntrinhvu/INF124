@@ -26,7 +26,7 @@ export default function Profile() {
                     <p className="text-sm">Role: Student</p>
                     <p className="text-sm">Joined Date: 2025</p>
                     <Link to= "/faq" className="border border-white text-white py-1 px-4 w-full text-sm">FAQ</Link>
-                    <Link to= "/acct-settings" className="border border-white text-white py-1 px-4 w-full text-sm">Account Settings</Link>
+                    <Link to= "/settings" className="border border-white text-white py-1 px-4 w-full text-sm">Account Settings</Link>
                 </div>
 
 
