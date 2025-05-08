@@ -10,6 +10,7 @@ import Dashboard from '../Dashboard/Dashboard.jsx';
 import Profile from '../Profile/Profile.jsx';
 import FAQ from '../FAQ/FAQ.jsx';
 import Settings from '../Settings/Settings.jsx';
+import Quiz from '../Quiz/Quiz.jsx'
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />}/>
           <Route path= "/faq" element = {<FAQ/>}/>
           <Route path = "/settings" element= {<Settings/>}/>
+          <Route path = "/quiz" element = {<Quiz/>}/>
         </Routes>
       </Router>
     </div>
