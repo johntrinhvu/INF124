@@ -7,7 +7,7 @@ import GenericAvatar from "../../assets/GenericAvatar.png";
 
 export default function Header() {
   return (
-    <div className="z-40 flex justify-center">
+    <div className="relative z-40 flex justify-center">
       <nav className="rounded-2xl fixed px-4 h-[52px] items-center top-0 mt-4 w-9/12 max-w-[1070px] flex justify-between bg-[#242452]">
         {/* Left Section */}
         <div className="flex items-center">
