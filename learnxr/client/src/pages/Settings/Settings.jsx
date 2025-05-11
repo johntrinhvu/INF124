@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Logo from "../../assets/LogoXROrange.png";
 
 export default function Settings() {
     const [emailUpdates, setEmailUpdates] = useState(true);
@@ -8,9 +9,12 @@ export default function Settings() {
     return (
         <div className="min-h-screen pt-24 bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white flex">
             {/* Sidebar */}
-            <aside className="w-64 bg-[#3b348b] p-6 space-y-4">
-                <h1 className="text-xl font-bold mb-4">LearnXR</h1>
-                <ul className="space-y-2 text-sm">
+            <aside className="hidden md:block w-64 bg-[#3b348b] p-10 space-y-4">
+                <div className="flex items-center">
+                    <img src={Logo} alt="Logo" className="w-10 h-10" />
+                    <h1 className="text-xl font-bold">LearnXR</h1>
+                </div>
+                <ul className="space-y-2 text-sm text-left">
                     <li className="hover:underline cursor-pointer">Profile</li>
                     <li className="hover:underline cursor-pointer">Preferences</li>
                     <li className="hover:underline cursor-pointer">Accessibility</li>
@@ -37,14 +41,14 @@ export default function Settings() {
                             placeholder="user@gmail.com"
                             className="w-full max-w-md p-2 rounded bg-[#1a1a3d] border border-white/20 text-sm"
                         />
-                        <div className="flex gap-4 pt-2">
-                            <button className="px-4 py-1 border border-white text-sm rounded">Change password</button>
+                        <div className="flex justify-center gap-4 pt-2">
+                            <button className="px-4 py-1 border border-white text-sm rounded">Change Password</button>
                             <button className="px-4 py-1 border border-white text-sm rounded">Update Profile Picture</button>
                         </div>
                     </div>
                 </div>
 
-                <div>
+                <div className="grid justify-center">
                     <h3 className="text-lg font-semibold mb-4">Preferences</h3>
                     <div className="flex gap-4 mb-4">
                         <select className="bg-[#1a1a3d] text-white border border-white/20 rounded px-3 py-2 text-sm">
