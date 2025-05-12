@@ -27,13 +27,13 @@ export default function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/signin" element={<SignIn />}/>
-          <Route path="/signup" element={<SignUp />}/>
-          <Route path="/dashboard" element={<Dashboard />}/>
-          <Route path="/profile" element={<Profile />}/>
-          <Route path= "/faq" element = {<FAQ/>}/>
-          <Route path = "/settings" element= {<Settings/>}/>
-          <Route path = "/quiz" element = {<Quiz/>}/>
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/faq" element={<FAQ/>} />
+          <Route path="/settings" element={<Settings/>} />
+          <Route path="/quiz" element={<Quiz/>} />
         </Routes>
       </Router>
     </div>
