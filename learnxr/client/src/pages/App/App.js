@@ -5,12 +5,13 @@ import axios from 'axios';
 import Header from "../../components/Header/Header.jsx";
 import Landing from "../Landing/Landing.jsx";
 import SignIn from "../SignIn/SignIn.jsx";
-import SignUp from '../SignUp/SignUp.jsx';
-import Dashboard from '../Dashboard/Dashboard.jsx';
-import Profile from '../Profile/Profile.jsx';
-import FAQ from '../FAQ/FAQ.jsx';
-import Settings from '../Settings/Settings.jsx';
-import Quiz from '../Quiz/Quiz.jsx'
+import SignUp from "../SignUp/SignUp.jsx";
+import Dashboard from "../Dashboard/Dashboard.jsx";
+import Profile from "../Profile/Profile.jsx";
+import FAQ from "../FAQ/FAQ.jsx";
+import Settings from "../Settings/Settings.jsx";
+import Quiz from "../Quiz/Quiz.jsx";
+import Course from "../Course/Course.jsx";
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/faq" element={<FAQ/>} />
           <Route path="/settings" element={<Settings/>} />
           <Route path="/quiz" element={<Quiz/>} />
+          <Route path="/course" element={<Course />} />
         </Routes>
       </Router>
     </div>

@@ -4,7 +4,7 @@ import SampleCoursePhoto from "../../../assets/SampleCoursePhoto.png";
 
 export default function CourseCard() {
     return (
-        <Link to="/quiz">
+        <Link to="/course">
             <div className="text-left border-2 border-[#252592] rounded-[20px] grid w-80 p-5">
                 <img 
                     src={SampleCoursePhoto}
