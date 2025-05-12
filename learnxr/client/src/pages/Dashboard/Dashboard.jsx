@@ -10,7 +10,7 @@ export default function Dashboard() {
         <div className="bg-[#0F0D2D] min-h-screen pt-24 p-6 text-white">
             <h1 className="text-4xl mb-4">Dashboard</h1>
             <p className="text-3xl text-[#b0aaff] mb-6">Welcome, John Doe</p>
-            <p className="text-3xl text-left p-2">Courses</p>
+            <p className="text-3xl text-left px-2 py-1">Courses</p>
             <div className="relative p-2 z-0">
                 <div className="flex space-x-4 overflow-x-auto scrollbar-hide pr-16">
                     <CourseCard />

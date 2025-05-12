@@ -5,11 +5,11 @@ import SampleCoursePhoto from "../../../assets/SampleCoursePhoto.png";
 export default function CourseCard() {
     return (
         <Link to="/course">
-            <div className="text-left border-2 border-[#252592] rounded-[20px] grid w-80 p-5">
+            <div className="text-left border-2 border-[#252592] rounded-[20px] grid w-60 p-5">
                 <img 
                     src={SampleCoursePhoto}
                     alt="Course Photo"
-                    className="w-80 h-60"
+                    className="w-60 h-40"
                 />
                 <h2 className="text-[#DEDAFF] text-2xl pt-2">
                     Course Title
