@@ -95,7 +95,7 @@ export default function Header() {
               </div>
             ) : (
               <>
-                <Link to="/dashboard" className="bg-[#3F3FE8] text-white py-2 px-5 text-sm font-semibold border-2 border-[#10103D] rounded-lg hover:bg-[#0505E6]">
+                <Link to="/dashboard" className="bg-[#3F3FE8] text-white py-2 px-5 text-sm font-semibold border-2 border-[#10103D] rounded-lg hover:bg-[#7676e8]">
                   Dashboard
                 </Link>
                 <div className="relative" ref={profileRef}>
