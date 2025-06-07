@@ -7,10 +7,16 @@ import { useState } from "react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    // Add any additional sign out logic here
   };
 
   const isActive = (path) => {
@@ -40,22 +46,32 @@ export default function Header() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2">
-            <div className="flex rounded-md border-[#10103D]">
-              <Link to="/signin" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
-                Sign In
-              </Link>
-              <Link to="/signup" className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm">
-                Sign Up
-              </Link>
-            </div>
-
-            <Link to="/profile">
-              <img 
-                src={GenericAvatar}
-                alt="user"
-                className="w-9 h-9 rounded-full border-2 border-[#ACAE5] hover:opacity-90"
-              />
-            </Link>
+            {!isAuthenticated ? (
+              <div className="flex rounded-md border-[#10103D] gap-1">
+                <Link to="/signin" className="bg-[#ACACE5] py-1 px-3 text-sm border-2 border-[#10103D] rounded-md hover:bg-[#7878A1]">
+                  Sign In
+                </Link>
+                <Link to="/signup" className="bg-[#ACACE5] py-1 px-3 text-sm border-2 border-[#10103D] rounded-md hover:bg-[#7878A1]">
+                  Sign Up
+                </Link>
+              </div>
+            ) : (
+              <>
+                <Link to="/profile">
+                  <img 
+                    src={GenericAvatar}
+                    alt="user"
+                    className="w-9 h-9 rounded-full border-2 border-[#ACAE5] hover:opacity-90"
+                  />
+                </Link>
+                <button 
+                  onClick={handleSignOut}
+                  className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm"
+                >
+                  Sign Out
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -78,32 +94,48 @@ export default function Header() {
             >
               Home
             </Link>
-            <Link 
-              to="/signin" 
-              className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/signin') ? 'text-yellow-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Sign In
-            </Link>
-            <Link 
-              to="/signup" 
-              className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/signup') ? 'text-yellow-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Sign Up
-            </Link>
-            <Link 
-              to="/profile" 
-              className={`flex items-center justify-start gap-2 relative ${isActive('/profile') ? 'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <img 
-                src={GenericAvatar}
-                alt="user"
-                className="w-9 h-9 rounded-full border-2 border-[#ACAE5]"
-              />
-              <span>Profile</span>
-            </Link>
+            {!isAuthenticated ? (
+              <>
+                <Link 
+                  to="/signin" 
+                  className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/signin') ? 'text-yellow-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/signup') ? 'text-yellow-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/profile" 
+                  className={`flex items-center justify-start gap-2 relative ${isActive('/profile') ? 'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <img 
+                    src={GenericAvatar}
+                    alt="user"
+                    className="w-9 h-9 rounded-full border-2 border-[#ACAE5]"
+                  />
+                  <span>Profile</span>
+                </Link>
+                <button 
+                  onClick={() => {
+                    handleSignOut();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex justify-start py-2 px-2 text-sm text-center"
+                >
+                  Sign Out
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
