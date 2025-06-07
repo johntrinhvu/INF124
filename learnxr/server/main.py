@@ -1,23 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pymongo import MongoClient
-from dotenv import load_dotenv
-import os
+from routes.user import router as user_router
 
-load_dotenv()
 app = FastAPI()
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # In production, replace with your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client.learnxr
+# Include routers
+app.include_router(user_router, prefix="/users", tags=["users"])
 
 @app.get("/")
-def read_root():
-    return {"msg": "Welcome to LearnXR API"}
+async def root():
+    return {"message": "Welcome to the FastAPI User Management API"}
