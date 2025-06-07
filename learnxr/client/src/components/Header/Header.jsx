@@ -1,22 +1,60 @@
 import "./Header.css";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/LogoXROrange.png";
 import GenericAvatar from "../../assets/GenericAvatar.png";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { isAuthenticated as checkAuth, getUser, logout } from "../../utils/auth";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check authentication status on mount and when auth state changes
+    const checkAuthStatus = () => {
+      const auth = checkAuth();
+      setIsAuthenticated(auth);
+      if (auth) {
+        setUser(getUser());
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkAuthStatus();
+    // Add event listener for storage changes
+    window.addEventListener("storage", checkAuthStatus);
+    return () => window.removeEventListener("storage", checkAuthStatus);
+  }, []);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleSignOut = () => {
+    logout();
     setIsAuthenticated(false);
-    // Add any additional sign out logic here
+    setUser(null);
+    setIsProfileOpen(false);
+    navigate("/signin");
   };
 
   const isActive = (path) => {
@@ -57,19 +95,38 @@ export default function Header() {
               </div>
             ) : (
               <>
-                <Link to="/profile">
-                  <img 
-                    src={GenericAvatar}
-                    alt="user"
-                    className="w-9 h-9 rounded-full border-2 border-[#ACAE5] hover:opacity-90"
-                  />
+                <Link to="/dashboard" className="bg-[#3F3FE8] text-white py-2 px-5 text-sm font-semibold border-2 border-[#10103D] rounded-lg hover:bg-[#0505E6]">
+                  Dashboard
                 </Link>
-                <button 
-                  onClick={handleSignOut}
-                  className="bg-[#ACACE5] py-1 px-3 text-sm border border-[#10103D] rounded-sm"
-                >
-                  Sign Out
-                </button>
+                <div className="relative" ref={profileRef}>
+                  <button 
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="focus:outline-none"
+                  >
+                    <img 
+                      src={GenericAvatar}
+                      alt="user"
+                      className="mt-1 w-9 h-9 rounded-full border-2 border-[#10103D] hover:opacity-90"
+                    />
+                  </button>
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-[#242452] border-2 border-[#10103D] rounded-md shadow-lg py-1">
+                      <Link 
+                        to="/profile" 
+                        className="block px-4 py-2 text-left text-sm text-white hover:bg-[#ACACE5]"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <button 
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#ACACE5]"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -115,15 +172,17 @@ export default function Header() {
               <>
                 <Link 
                   to="/profile" 
-                  className={`flex items-center justify-start gap-2 relative ${isActive('/profile') ? 'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
+                  className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/profile') ? 'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <img 
-                    src={GenericAvatar}
-                    alt="user"
-                    className="w-9 h-9 rounded-full border-2 border-[#ACAE5]"
-                  />
-                  <span>Profile</span>
+                  Profile
+                </Link>
+                <Link 
+                  to="/dashboard" 
+                  className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/dashboard') ? 'text-yellow-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
                 </Link>
                 <button 
                   onClick={() => {

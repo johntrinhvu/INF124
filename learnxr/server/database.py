@@ -24,7 +24,7 @@ except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
     raise
 
-db = client.user_db
+db = client.learnxr
 
 async def get_database():
     try:
