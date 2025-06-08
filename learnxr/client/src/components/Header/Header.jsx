@@ -57,6 +57,13 @@ export default function Header() {
     navigate("/signin");
   };
 
+  const handleProfileClick = () => {
+    if (user) {
+      navigate(`/profile/${user.username}`);
+    }
+    setIsProfileOpen(false);
+  };
+
   const isActive = (path) => {
     return location.pathname === path;
   };
@@ -111,13 +118,12 @@ export default function Header() {
                   </button>
                   {isProfileOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-[#242452] border-2 border-[#10103D] rounded-md shadow-lg py-1">
-                      <Link 
-                        to="/profile" 
-                        className="block px-4 py-2 text-left text-sm text-white hover:bg-[#ACACE5]"
-                        onClick={() => setIsProfileOpen(false)}
+                      <button 
+                        onClick={handleProfileClick}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#ACACE5]"
                       >
                         Profile
-                      </Link>
+                      </button>
                       <button 
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-[#ACACE5]"
@@ -171,8 +177,8 @@ export default function Header() {
             ) : (
               <>
                 <Link 
-                  to="/profile" 
-                  className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive('/profile') ? 'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
+                  to={`/profile/${user.username}`}
+                  className={`flex justify-start py-2 px-2 text-sm text-center relative ${isActive(`/profile/${user.username}`) ? 'text-yellow-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400' : ''}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Profile

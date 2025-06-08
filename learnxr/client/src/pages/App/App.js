@@ -12,6 +12,7 @@ import FAQ from "../FAQ/FAQ.jsx";
 import Settings from "../Settings/Settings.jsx";
 import Quiz from "../Quiz/Quiz.jsx";
 import Course from "../Course/Course.jsx";
+import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -30,12 +31,32 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile/:username" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
           <Route path="/faq" element={<FAQ/>} />
-          <Route path="/settings" element={<Settings/>} />
-          <Route path="/quiz" element={<Quiz/>} />
-          <Route path="/course" element={<Course />} />
+          <Route path="/profile/:username/settings" element={
+            <ProtectedRoute>
+              <Settings/>
+            </ProtectedRoute>
+          } />
+          <Route path="/quiz" element={
+            <ProtectedRoute>
+              <Quiz/>
+            </ProtectedRoute>
+          } />
+          <Route path="/course" element={
+            <ProtectedRoute>
+              <Course />
+            </ProtectedRoute>
+          } />
         </Routes>
       </Router>
     </div>

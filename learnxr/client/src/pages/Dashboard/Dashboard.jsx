@@ -4,12 +4,25 @@ import QuizAccuracyCard from "../../components/DashboardCards/QuizAccuracyCard/Q
 import QuizzesCompletedCard from '../../components/DashboardCards/QuizzesCompletedCard/QuizzesCompletedCard';
 import CurrentStreakCard from '../../components/DashboardCards/CurrentStreakCard/CurrentStreakCard';
 import CourseCard from '../../components/DashboardCards/CourseCard/CourseCard';
+import { getUser } from '../../utils/auth';
+import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const userData = getUser();
+        setUser(userData);
+    }, []);
+
+    if (!user) {
+        return null; // or a loading state
+    }
+
     return (
         <div className="bg-[#0F0D2D] min-h-screen pt-24 p-6 text-white">
             <h1 className="text-4xl mb-4">Dashboard</h1>
-            <p className="text-3xl text-[#b0aaff] mb-6">Welcome, John Doe</p>
+            <p className="text-3xl text-[#b0aaff] mb-6">Welcome, {user.username}</p>
             <div className="pt-6">
                 <Link to="/quiz">
                     <button className="bg-purple-500 hover:bg-purple-600 text-white text-xl font-semibold px-16 py-6 rounded transition" >
@@ -35,7 +48,6 @@ export default function Dashboard() {
                     <CurrentStreakCard />
                 </div>
             </div>
-
         </div>
     );
 }

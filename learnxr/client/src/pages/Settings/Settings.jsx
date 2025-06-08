@@ -1,98 +1,178 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "../../assets/LogoXROrange.png";
+import { useParams, useNavigate } from "react-router-dom";
+import { getUser } from "../../utils/auth";
 
 export default function Settings() {
+    const { username } = useParams();
+    const navigate = useNavigate();
     const [emailUpdates, setEmailUpdates] = useState(true);
     const [pushNotifications, setPushNotifications] = useState(false);
     const [autoUpdates, setAutoUpdates] = useState(false);
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        bio: ""
+    });
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/users/username/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const userData = await response.json();
+                setFormData({
+                    username: userData.username || "",
+                    email: userData.email || "",
+                    bio: userData.about || ""
+                });
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [username]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+        setSuccess(false);
+
+        try {
+            const response = await fetch(`http://localhost:8000/users/username/${username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    about: formData.bio
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update profile');
+            }
+
+            setSuccess(true);
+            // If username was changed, redirect to new profile URL
+            const updatedUser = await response.json();
+            if (updatedUser.username !== username) {
+                navigate(`/profile/${updatedUser.username}/settings`);
+            }
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen pt-24 bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white flex items-center justify-center">
+                <p>Loading...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen pt-24 bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white flex">
             {/* Sidebar */}
-            <aside className="hidden md:block w-64 bg-[#3b348b] p-10 space-y-4">
-                <div className="flex items-center">
-                    <img src={Logo} alt="Logo" className="w-10 h-10" />
-                    <h1 className="text-xl font-bold">LearnXR</h1>
-                </div>
-                <ul className="space-y-2 text-sm text-left">
-                    <li className="hover:underline cursor-pointer">Profile</li>
-                    <li className="hover:underline cursor-pointer">Preferences</li>
-                    <li className="hover:underline cursor-pointer">Accessibility</li>
-                    <li className="hover:underline cursor-pointer">Study Settings</li>
-                    <li className="hover:underline cursor-pointer">XR/VR Settings</li>
-                </ul>
-            </aside>
-
-            
             <main className="flex-1 p-10 space-y-10">
                 <div>
-                    <h2 className="text-2xl font-bold mb-4">Settings</h2>
-
+                    <h2 className="text-2xl font-bold mb-4">Profile Settings</h2>
                     
-                    <div className="space-y-3">
-                        <h3 className="text-lg font-semibold">Profile Settings</h3>
-                        <input
-                            type="text"
-                            placeholder="Username123"
-                            className="w-full max-w-md p-2 rounded bg-[#1a1a3d] border border-white/20 text-sm"
-                        />
-                        <input
-                            type="email"
-                            placeholder="user@gmail.com"
-                            className="w-full max-w-md p-2 rounded bg-[#1a1a3d] border border-white/20 text-sm"
-                        />
-                        <div className="flex justify-center gap-4 pt-2">
-                            <button className="px-4 py-1 border border-white text-sm rounded">Change Password</button>
-                            <button className="px-4 py-1 border border-white text-sm rounded">Update Profile Picture</button>
+                    {error && (
+                        <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded mb-4">
+                            {error}
                         </div>
-                    </div>
-                </div>
+                    )}
+                    
+                    {success && (
+                        <div className="bg-green-500/20 border border-green-500 text-green-200 px-4 py-2 rounded mb-4">
+                            Profile updated successfully!
+                        </div>
+                    )}
 
-                <div className="grid justify-center">
-                    <h3 className="text-lg font-semibold mb-4">Preferences</h3>
-                    <div className="flex gap-4 mb-4">
-                        <select className="bg-[#1a1a3d] text-white border border-white/20 rounded px-3 py-2 text-sm">
-                            <option>Theme</option>
-                            <option>Light</option>
-                            <option>Dark</option>
-                        </select>
-                        <select className="bg-[#1a1a3d] text-white border border-white/20 rounded px-3 py-2 text-sm">
-                            <option>Language</option>
-                            <option>English</option>
-                            <option>Spanish</option>
-                        </select>
-                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-3">
+                            <h3 className="text-lg font-semibold">Basic Information</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm mb-1">Username</label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleInputChange}
+                                        className="w-full max-w-md p-2 rounded bg-[#1a1a3d] border border-white/20 text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        className="w-full max-w-md p-2 rounded bg-[#1a1a3d] border border-white/20 text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm mb-1">Bio</label>
+                                    <textarea
+                                        name="bio"
+                                        value={formData.bio}
+                                        onChange={handleInputChange}
+                                        rows="4"
+                                        className="w-full max-w-md p-2 rounded bg-[#1a1a3d] border border-white/20 text-sm"
+                                        placeholder="Tell us about yourself..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
-                    {/* Toggle Switches */}
-                    <div className="space-y-2 text-sm">
-                        <Toggle label="Email Updates" value={emailUpdates} onChange={setEmailUpdates} />
-                        <Toggle label="Push Notifications" value={pushNotifications} onChange={setPushNotifications} />
-                        <Toggle label="Automatic Updates" value={autoUpdates} onChange={setAutoUpdates} />
-                    </div>
-                </div>
-                <div className="pt-4">
-                    <button className="px-6 py-2 bg-purple-500 hover:bg-purple-600 transition-colors rounded text-sm font-semibold">
-                        Save Settings
-                    </button>
+                        <div className="pt-4">
+                            <button 
+                                type="submit"
+                                className="px-6 py-2 bg-[#3F3FE8] hover:bg-[#7676e8] transition-colors rounded text-sm font-semibold"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </main>
         </div>
     );
 }
 
-
 function Toggle({ label, value, onChange }) {
     return (
         <div className="flex items-center justify-between max-w-md">
             <span>{label}</span>
             <button
-                className={`w-10 h-5 rounded-full p-1 transition-colors ${value ? "bg-purple-400" : "bg-gray-500"
-                    }`}
+                className={`w-10 h-5 rounded-full p-1 transition-colors ${value ? "bg-purple-400" : "bg-gray-500"}`}
                 onClick={() => onChange(!value)}
             >
                 <div
-                    className={`bg-white w-3 h-3 rounded-full transition-transform ${value ? "translate-x-5" : ""
-                        }`}
+                    className={`bg-white w-3 h-3 rounded-full transition-transform ${value ? "translate-x-5" : ""}`}
                 />
             </button>
         </div>

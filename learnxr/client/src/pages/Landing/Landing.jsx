@@ -2,8 +2,12 @@ import "./Landing.css";
 import vrHeadset from "../../assets/vrHeadset.png";
 import FloatingHead3D from "../../components/FloatingHead/FloatingHead";
 import Typewriter from 'typewriter-effect';
+import { isAuthenticated } from "../../utils/auth";
+import { Link } from "react-router-dom";
 
 export default function Landing() {
+  const isLoggedIn = isAuthenticated();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#050515] via-[#0a0a23] to-[#2a2a4a]">
       <div className="flex flex-col gap-10 md:pt-16 md:flex-row md:justify-center md:items-center min-h-screen md:gap-32">
@@ -30,12 +34,12 @@ export default function Landing() {
           LearnXR is an interactive AR experience designed to be smooth and user-friendly.
           Explore and learn like never before with our cutting-edge platform!
         </p>
-        <a 
-          href="/signup" 
+        <Link 
+          to={isLoggedIn ? "/dashboard" : "/signup"}
           className="bg-[#3F3FE8] hover:bg-[#7676e8] text-white font-semibold py-3 px-8 rounded-lg"
         >
-          Try it out
-        </a>
+          {isLoggedIn ? "Go to Dashboard" : "Try it out"}
+        </Link>
       </div>
     </div>
   );
