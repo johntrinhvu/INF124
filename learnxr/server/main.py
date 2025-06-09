@@ -13,14 +13,15 @@ app = FastAPI()
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=["*"],  # Allow all origins during development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # Include routers
-app.include_router(user_router, prefix="/users", tags=["users"])
+app.include_router(user_router, prefix="/api/users", tags=["users"])
 app.include_router(courses_router, prefix="/api", tags=["courses"])
 app.include_router(quizzes_router, prefix="/api", tags=["quizzes"])
 

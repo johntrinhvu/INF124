@@ -21,7 +21,7 @@ export default function Settings() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/users/username/${username}`);
+                const response = await fetch(`http://localhost:8000/api/users/username/${username}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -55,31 +55,52 @@ export default function Settings() {
         setSuccess(false);
 
         try {
-            const response = await fetch(`http://localhost:8000/users/username/${username}`, {
+            // Validate the data
+            if (!formData.username.trim()) {
+                throw new Error('Username is required');
+            }
+            if (!formData.email.trim()) {
+                throw new Error('Email is required');
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Not authenticated');
+            }
+
+            const updateData = {
+                username: formData.username.trim(),
+                email: formData.email.trim(),
+                about: formData.bio.trim()
+            };
+
+            console.log('Sending update data:', updateData);
+            console.log('Current username:', username);
+
+            const response = await fetch(`http://localhost:8000/api/users/username/${username}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    about: formData.bio
-                })
+                body: JSON.stringify(updateData)
             });
 
+            const responseData = await response.json();
+            console.log('Server response:', responseData);
+
             if (!response.ok) {
-                throw new Error('Failed to update profile');
+                throw new Error(responseData.detail || 'Failed to update profile');
             }
 
             setSuccess(true);
             // If username was changed, redirect to new profile URL
-            const updatedUser = await response.json();
-            if (updatedUser.username !== username) {
-                navigate(`/profile/${updatedUser.username}/settings`);
+            if (responseData.username !== username) {
+                navigate(`/profile/${responseData.username}/settings`);
             }
         } catch (err) {
-            setError(err.message);
+            console.error('Error updating profile:', err);
+            setError(err.message || 'An error occurred while updating your profile');
         }
     };
 

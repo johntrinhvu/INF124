@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import QuizAccuracyCard from "../../components/DashboardCards/QuizAccuracyCard/QuizAccuracyCard";
 import QuizzesCompletedCard from '../../components/DashboardCards/QuizzesCompletedCard/QuizzesCompletedCard';
 import CurrentStreakCard from '../../components/DashboardCards/CurrentStreakCard/CurrentStreakCard';
+import RecentQuizzesCard from '../../components/DashboardCards/RecentQuizzesCard/RecentQuizzesCard';
 import CourseCard from '../../components/DashboardCards/CourseCard/CourseCard';
 import { getUser } from '../../utils/auth';
 import { useEffect, useState } from 'react';
@@ -87,9 +88,16 @@ export default function Dashboard() {
                 <div className="bg-gradient-to-r from-white/0 to-[#0F0D2D] pointer-events-none absolute right-0 top-0 h-full w-1/4 max-w-40 " />
             </div>
             <div className="grid md:grid-cols-2 gap-4 mt-8">
-                <QuizAccuracyCard />
-                <QuizzesCompletedCard />
-                <div className="md:col-span-2">
+                <div key="quiz-accuracy">
+                    <QuizAccuracyCard />
+                </div>
+                <div key="quizzes-completed">
+                    <QuizzesCompletedCard />
+                </div>
+                <div key="recent-quizzes" className="md:col-span-2">
+                    <RecentQuizzesCard />
+                </div>
+                <div key="current-streak" className="md:col-span-2">
                     <CurrentStreakCard />
                 </div>
             </div>

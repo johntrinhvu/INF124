@@ -25,7 +25,7 @@ export default function Profile() {
                 setCurrentUser(loggedInUser);
 
                 // Fetch the profile user's data
-                const response = await fetch(`http://localhost:8000/users/username/${username}`);
+                const response = await fetch(`http://localhost:8000/api/users/username/${username}`);
                 if (!response.ok) {
                     throw new Error('User not found');
                 }
@@ -48,7 +48,7 @@ export default function Profile() {
 
     const handleFollow = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/users/username/${username}/follow`, {
+            const response = await fetch(`http://localhost:8000/api/users/username/${username}/follow`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -60,7 +60,7 @@ export default function Profile() {
             }
 
             // Update the profile user's data
-            const updatedResponse = await fetch(`http://localhost:8000/users/username/${username}`);
+            const updatedResponse = await fetch(`http://localhost:8000/api/users/username/${username}`);
             if (updatedResponse.ok) {
                 const updatedUser = await updatedResponse.json();
                 setProfileUser(updatedUser);
@@ -73,7 +73,7 @@ export default function Profile() {
 
     const handleUnfollow = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/users/username/${username}/unfollow`, {
+            const response = await fetch(`http://localhost:8000/api/users/username/${username}/unfollow`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -85,7 +85,7 @@ export default function Profile() {
             }
 
             // Update the profile user's data
-            const updatedResponse = await fetch(`http://localhost:8000/users/username/${username}`);
+            const updatedResponse = await fetch(`http://localhost:8000/api/users/username/${username}`);
             if (updatedResponse.ok) {
                 const updatedUser = await updatedResponse.json();
                 setProfileUser(updatedUser);

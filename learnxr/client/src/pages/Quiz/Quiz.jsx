@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
+import { getToken } from '../../utils/auth';
 
 export default function Quiz() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Quiz() {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [quizCompleted, setQuizCompleted] = useState(false);
     const [score, setScore] = useState(null);
+    const [showResults, setShowResults] = useState(false);
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -85,18 +87,40 @@ export default function Quiz() {
 
     const handleSubmit = async () => {
         try {
-            const answers = Object.values(selectedAnswers);
-            console.log('Submitting answers:', answers);
-            const response = await axios.post('http://localhost:8000/api/quizzes/submit', {
-                quiz_id: quiz.id,
-                answers: answers
+            const token = getToken();
+            if (!token) {
+                setError('You must be logged in to submit the quiz');
+                return;
+            }
+
+            // Convert selectedAnswers to the correct format with string values
+            const formattedAnswers = {};
+            Object.entries(selectedAnswers).forEach(([index, answer]) => {
+                // Get the actual answer text from the question options
+                const question = quiz.questions[parseInt(index)];
+                const selectedAnswer = question.options[parseInt(answer)];
+                formattedAnswers[index.toString()] = selectedAnswer;
             });
+
+            console.log('Submitting answers:', formattedAnswers);
+
+            const response = await axios.post(
+                `http://localhost:8000/api/quizzes/${quiz.id}/submit`,
+                {
+                    answers: formattedAnswers
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
             console.log('Submit response:', response.data);
-            setScore(response.data);
+            setScore(response.data.score);
             setQuizCompleted(true);
         } catch (error) {
-            console.error('Error submitting quiz:', error.response?.data || error.message);
-            setError(error.response?.data?.detail || 'Failed to submit quiz');
+            console.error('Error submitting quiz:', error.response?.data || error);
+            setError('Failed to submit quiz. Please try again.');
         }
     };
 
@@ -136,13 +160,12 @@ export default function Quiz() {
             <div className="min-h-screen pt-24 bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white flex justify-center items-start px-4">
                 <div className="bg-[#3b348b] p-8 rounded-xl w-full max-w-2xl text-center">
                     <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
-                    <p className="text-xl mb-2">Your Score: {score.score}%</p>
-                    <p className="mb-6">Correct Answers: {score.correct_answers} out of {score.total_questions}</p>
+                    <p className="text-xl mb-2">Your Score: {score}%</p>
                     <button
                         onClick={handleClose}
-                        className="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600"
+                        className="bg-[#b0aaff] text-[#0a0a23] px-6 py-2 rounded-lg hover:bg-[#9b8fff] transition-colors"
                     >
-                        Return to Dashboard
+                        Close
                     </button>
                 </div>
             </div>

@@ -3,28 +3,16 @@ import "./CourseCard.css";
 import SampleCoursePhoto from "../../../assets/SampleCoursePhoto.png";
 
 export default function CourseCard({ id, title, description, category, difficulty }) {
-    // Convert title to URL-friendly format
-    const urlTitle = encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
-    
     return (
-        <Link to={`/quizzes/${urlTitle}`} state={{ courseTitle: title }}>
-            <div className="text-left border-2 border-[#252592] rounded-[20px] grid w-60 p-5 hover:border-purple-500 transition-colors cursor-pointer">
-                <img 
-                    src={SampleCoursePhoto}
-                    alt={`${title} Course Photo`}
-                    className="w-60 h-40 object-cover rounded-lg"
-                />
-                <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-purple-400">{category}</span>
+        <div className="bg-[#1E1B4B] rounded-lg p-6 w-80 flex-shrink-0">
+            <Link to={`/courses/${encodeURIComponent(title)}`} className="block">
+                <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
+                <p className="text-[#b0aaff] mb-4 line-clamp-2">{description}</p>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#b0aaff]">{category}</span>
                     <span className="text-sm text-[#b0aaff]">{difficulty}</span>
                 </div>
-                <h2 className="text-[#DEDAFF] text-2xl pt-2">
-                    {title}
-                </h2>
-                <p className="text-[#b0aaff] line-clamp-3">
-                    {description}
-                </p>
-            </div>
-        </Link>
+            </Link>
+        </div>
     );
 }

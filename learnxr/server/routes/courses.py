@@ -2,21 +2,46 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 from models.course import Course, INITIAL_COURSES
 from database import get_database
+from bson import ObjectId
 import logging
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.get("/courses", response_model=List[Course])
+def convert_objectid_to_str(obj):
+    if isinstance(obj, dict):
+        return {k: convert_objectid_to_str(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_objectid_to_str(item) for item in obj]
+    elif isinstance(obj, ObjectId):
+        return str(obj)
+    return obj
+
+@router.get("/courses")
 async def get_courses():
     try:
         db = await get_database()
         courses = await db.courses.find().to_list(length=None)
         logger.info(f"Retrieved {len(courses)} courses")
-        return courses
+        return convert_objectid_to_str(courses)
     except Exception as e:
         logger.error(f"Error fetching courses: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch courses")
+        raise HTTPException(status_code=500, detail="Error fetching courses")
+
+@router.get("/courses/{course_title}")
+async def get_course(course_title: str):
+    try:
+        db = await get_database()
+        # Use regex to match the course title case-insensitively
+        course = await db.courses.find_one({"title": {"$regex": f"^{course_title}$", "$options": "i"}})
+        if not course:
+            raise HTTPException(status_code=404, detail="Course not found")
+        return convert_objectid_to_str(course)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching course: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error fetching course")
 
 @router.get("/courses/debug")
 async def debug_courses():
@@ -54,14 +79,12 @@ async def initialize_courses():
 async def reinitialize_courses():
     try:
         db = await get_database()
-        # Delete all existing courses
-        await db.courses.delete_many({})
-        logger.info("Deleted all existing courses")
-        
-        # Insert initial courses
+        # Drop existing courses
+        await db.courses.drop()
+        # Insert new courses
         result = await db.courses.insert_many(INITIAL_COURSES)
-        logger.info(f"Reinitialized {len(result.inserted_ids)} courses")
+        logger.info(f"Successfully reinitialized {len(result.inserted_ids)} courses")
         return {"message": f"Successfully reinitialized {len(result.inserted_ids)} courses"}
     except Exception as e:
         logger.error(f"Error reinitializing courses: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to reinitialize courses") 
+        raise HTTPException(status_code=500, detail="Error reinitializing courses") 

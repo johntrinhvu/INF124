@@ -38,7 +38,7 @@ export default function SignUpCard() {
 
         try {
             // First, create the user account
-            const signupResponse = await fetch("http://localhost:8000/users/", {
+            const signupResponse = await fetch("http://localhost:8000/api/users/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -57,7 +57,7 @@ export default function SignUpCard() {
             }
 
             // Then, automatically log in the user
-            const loginResponse = await fetch("http://localhost:8000/users/login", {
+            const loginResponse = await fetch("http://localhost:8000/api/users/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

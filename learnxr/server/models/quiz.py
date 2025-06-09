@@ -1,13 +1,13 @@
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 import uuid
 
 class Question(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     text: str
     options: List[str]
-    correct_answer: int
+    correct_answer: str
     explanation: Optional[str] = None
 
     class Config:
@@ -26,8 +26,29 @@ class Quiz(BaseModel):
         from_attributes = True
 
 class QuizSubmission(BaseModel):
-    quiz_id: str
-    answers: List[int]
+    answers: Dict[str, str] = Field(
+        description="Maps question index (as string) to selected answer text (as string)",
+        example={
+            "0": "To execute instructions and process data",
+            "1": "RAM"
+        }
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "answers": {
+                    "0": "To execute instructions and process data",
+                    "1": "RAM"
+                }
+            }
+        }
+
+    @validator('answers')
+    def validate_answers(cls, v):
+        if not v:
+            raise ValueError('Answers cannot be empty')
+        return v
 
 # Sample questions for each course
 COURSE_QUESTIONS = {
@@ -41,8 +62,8 @@ COURSE_QUESTIONS = {
                 "To display graphics",
                 "To connect to the internet"
             ],
-            "correct_answer": 1,
-            "explanation": "The CPU (Central Processing Unit) is responsible for executing instructions and processing data. It's often called the 'brain' of the computer."
+            "correct_answer": "To execute instructions and process data",
+            "explanation": "The CPU (Central Processing Unit) is the brain of the computer, responsible for executing instructions and processing data."
         },
         {
             "id": str(uuid.uuid4()),
@@ -53,7 +74,7 @@ COURSE_QUESTIONS = {
                 "CPU",
                 "Power Supply"
             ],
-            "correct_answer": 1,
+            "correct_answer": "RAM",
             "explanation": "RAM (Random Access Memory) is used for temporary data storage while the computer is running."
         }
     ],
@@ -62,25 +83,25 @@ COURSE_QUESTIONS = {
             "id": str(uuid.uuid4()),
             "text": "What is the primary role of a nurse?",
             "options": [
-                "Only to administer medications",
+                "To perform surgery",
+                "To prescribe medication",
                 "To provide patient care and support",
-                "Only to take vital signs",
-                "Only to assist doctors"
+                "To manage hospital finances"
             ],
-            "correct_answer": 1,
-            "explanation": "Nurses have a comprehensive role in patient care, including assessment, planning, implementation, and evaluation of patient care."
+            "correct_answer": "To provide patient care and support",
+            "explanation": "Nurses are primarily responsible for patient care, monitoring, and support."
         },
         {
             "id": str(uuid.uuid4()),
-            "text": "What does HIPAA stand for?",
+            "text": "Which of these is a vital sign?",
             "options": [
-                "Health Insurance Portability and Accountability Act",
-                "Health Information Protection and Access Act",
-                "Healthcare Insurance and Patient Access Act",
-                "Health Information Privacy and Accountability Act"
+                "Blood pressure",
+                "Hair color",
+                "Shoe size",
+                "Favorite food"
             ],
-            "correct_answer": 0,
-            "explanation": "HIPAA is the Health Insurance Portability and Accountability Act, which protects patient privacy and health information."
+            "correct_answer": "Blood pressure",
+            "explanation": "Blood pressure is one of the main vital signs used to assess a patient's health."
         }
     ],
     "Introduction to Electrical Engineering": [
@@ -90,10 +111,10 @@ COURSE_QUESTIONS = {
             "options": [
                 "V = IR",
                 "P = VI",
-                "I = V/R",
-                "R = V/I"
+                "F = ma",
+                "E = mc²"
             ],
-            "correct_answer": 0,
+            "correct_answer": "V = IR",
             "explanation": "Ohm's Law states that voltage (V) equals current (I) times resistance (R)."
         },
         {
@@ -105,34 +126,34 @@ COURSE_QUESTIONS = {
                 "Ohm",
                 "Watt"
             ],
-            "correct_answer": 2,
-            "explanation": "The unit of electrical resistance is the Ohm (Ω)."
+            "correct_answer": "Ohm",
+            "explanation": "The ohm (Ω) is the unit of electrical resistance."
         }
     ],
     "Introduction to Chemistry": [
         {
             "id": str(uuid.uuid4()),
-            "text": "What is the atomic number of Hydrogen?",
+            "text": "What is the atomic number of carbon?",
             "options": [
-                "1",
-                "2",
-                "3",
-                "4"
+                "6",
+                "12",
+                "14",
+                "16"
             ],
-            "correct_answer": 0,
-            "explanation": "Hydrogen has an atomic number of 1, meaning it has one proton."
+            "correct_answer": "6",
+            "explanation": "Carbon has 6 protons, which determines its atomic number."
         },
         {
             "id": str(uuid.uuid4()),
-            "text": "What is the chemical formula for water?",
+            "text": "What type of bond is formed when atoms share electrons?",
             "options": [
-                "CO2",
-                "H2O",
-                "O2",
-                "H2O2"
+                "Ionic bond",
+                "Covalent bond",
+                "Metallic bond",
+                "Hydrogen bond"
             ],
-            "correct_answer": 1,
-            "explanation": "Water's chemical formula is H2O, consisting of two hydrogen atoms and one oxygen atom."
+            "correct_answer": "Covalent bond",
+            "explanation": "A covalent bond is formed when atoms share electrons."
         }
     ],
     "Advanced Computer Networks": [
@@ -141,49 +162,49 @@ COURSE_QUESTIONS = {
             "text": "What is the purpose of a router?",
             "options": [
                 "To connect devices within a local network",
-                "To forward data packets between networks",
+                "To route data between different networks",
                 "To store data",
                 "To process data"
             ],
-            "correct_answer": 1,
-            "explanation": "A router's main purpose is to forward data packets between different networks."
+            "correct_answer": "To route data between different networks",
+            "explanation": "Routers are used to forward data packets between different networks."
         },
         {
             "id": str(uuid.uuid4()),
-            "text": "What is TCP/IP?",
+            "text": "Which protocol is used for secure web browsing?",
             "options": [
-                "A type of computer",
-                "A network protocol suite",
-                "A type of cable",
-                "A type of server"
+                "HTTP",
+                "FTP",
+                "HTTPS",
+                "SMTP"
             ],
-            "correct_answer": 1,
-            "explanation": "TCP/IP is a suite of communication protocols used to interconnect network devices on the internet."
+            "correct_answer": "HTTPS",
+            "explanation": "HTTPS (Hypertext Transfer Protocol Secure) provides secure communication over a network."
         }
     ],
     "Biochemistry": [
         {
             "id": str(uuid.uuid4()),
-            "text": "What is the primary function of DNA?",
+            "text": "What is the primary function of enzymes?",
             "options": [
-                "To provide energy",
-                "To store genetic information",
-                "To build cell walls",
-                "To transport oxygen"
+                "To store energy",
+                "To catalyze chemical reactions",
+                "To transport molecules",
+                "To provide structure"
             ],
-            "correct_answer": 1,
-            "explanation": "DNA's primary function is to store and transmit genetic information."
+            "correct_answer": "To catalyze chemical reactions",
+            "explanation": "Enzymes are biological catalysts that speed up chemical reactions."
         },
         {
             "id": str(uuid.uuid4()),
             "text": "What is the main energy currency of cells?",
             "options": [
-                "DNA",
-                "RNA",
+                "Glucose",
                 "ATP",
-                "Glucose"
+                "DNA",
+                "Protein"
             ],
-            "correct_answer": 2,
+            "correct_answer": "ATP",
             "explanation": "ATP (Adenosine Triphosphate) is the main energy currency of cells."
         }
     ]

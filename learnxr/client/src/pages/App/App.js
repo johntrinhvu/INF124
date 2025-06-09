@@ -34,7 +34,7 @@ function App() {
                     <Route path="/faq" element={<FAQ/>} />
                     <Route path="/profile/:username/settings" element={
                         <ProtectedRoute>
-                            <Settings/>
+                            <Settings />
                         </ProtectedRoute>
                     } />
                     <Route path="/quizzes/:courseTitle" element={
@@ -42,7 +42,7 @@ function App() {
                             <Quiz />
                         </ProtectedRoute>
                     } />
-                    <Route path="/course" element={
+                    <Route path="/courses/:courseTitle" element={
                         <ProtectedRoute>
                             <Course />
                         </ProtectedRoute>
