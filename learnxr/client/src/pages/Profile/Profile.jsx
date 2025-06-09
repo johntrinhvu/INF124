@@ -16,6 +16,7 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [showCopyNotification, setShowCopyNotification] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -96,6 +97,16 @@ export default function Profile() {
         }
     };
 
+    const handleShareProfile = () => {
+        const profileUrl = `${window.location.origin}/profile/${username}`;
+        navigator.clipboard.writeText(profileUrl).then(() => {
+            setShowCopyNotification(true);
+            setTimeout(() => {
+                setShowCopyNotification(false);
+            }, 2000);
+        });
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen pt-[120px] bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white flex items-center justify-center">
@@ -124,13 +135,23 @@ export default function Profile() {
     return (
         <div className="min-h-screen pt-[120px] bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white px-4 py-8">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div className="bg-[#3b348b] p-6 rounded-xl flex flex-col items-center space-y-4">
+                <div className="bg-[#3b348b] p-6 rounded-xl flex flex-col items-center space-y-4 relative">
                     {isOwnProfile ? (
                         <>
-                            <button className="border border-white text-white py-1 px-4 w-full text-sm">Share Profile</button>
+                            <button 
+                                onClick={handleShareProfile}
+                                className="border border-white text-white py-1 px-4 w-full text-sm hover:bg-white hover:text-[#3b348b] transition-colors"
+                            >
+                                Share Profile
+                            </button>
+                            {showCopyNotification && (
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white px-4 py-2 rounded-lg text-sm animate-fade-in-out">
+                                    Copied!
+                                </div>
+                            )}
                             <button 
                                 onClick={() => navigate(`/profile/${username}/settings`)}
-                                className="border border-white text-white py-1 px-4 w-full text-sm"
+                                className="border border-white text-white py-1 px-4 w-full text-sm hover:bg-white hover:text-[#3b348b] transition-colors"
                             >
                                 Edit Profile
                             </button>

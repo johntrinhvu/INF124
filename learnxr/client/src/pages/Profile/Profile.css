@@ -1,0 +1,22 @@
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(0.9);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(0.9);
+    }
+}
+
+.animate-fade-in-out {
+    animation: fadeInOut 2s ease-in-out;
+}
