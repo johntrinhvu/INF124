@@ -17,6 +17,7 @@ export default function Settings() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -104,6 +105,37 @@ export default function Settings() {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Not authenticated');
+            }
+
+            const response = await fetch(`http://localhost:8000/api/users/username/${username}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || 'Failed to delete account');
+            }
+
+            // Clear local storage
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            // Redirect to home page
+            navigate('/');
+        } catch (err) {
+            console.error('Error deleting account:', err);
+            setError(err.message || 'An error occurred while deleting your account');
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen pt-24 bg-gradient-to-b from-[#0a0a23] to-[#1a1a3d] text-white flex items-center justify-center">
@@ -169,17 +201,55 @@ export default function Settings() {
                             </div>
                         </div>
 
-                        <div className="pt-4">
+                        <div className="pt-4 space-y-4">
                             <button 
                                 type="submit"
                                 className="px-6 py-2 bg-[#3F3FE8] hover:bg-[#7676e8] transition-colors rounded text-sm font-semibold"
                             >
                                 Save Changes
                             </button>
+
+                            <div className="pt-8 border-t border-white/10">
+                                <h3 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h3>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="px-6 py-2 bg-red-500 hover:bg-red-600 transition-colors rounded text-sm font-semibold"
+                                >
+                                    Delete Account
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </main>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+                    <div className="bg-[#1a1a3d] p-6 rounded-lg max-w-md w-full">
+                        <h3 className="text-xl font-bold text-red-400 mb-4">Delete Account</h3>
+                        <p className="text-white/80 mb-6">
+                            Are you sure you want to delete your account? This action cannot be undone.
+                            All your data will be permanently deleted.
+                        </p>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 transition-colors rounded text-sm font-semibold"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteAccount}
+                                className="px-4 py-2 bg-red-500 hover:bg-red-600 transition-colors rounded text-sm font-semibold"
+                            >
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

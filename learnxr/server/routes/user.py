@@ -138,43 +138,57 @@ def update_streak(user: dict) -> dict:
 @router.post("/", response_model=UserResponse)
 async def create_user(user: UserCreate):
     try:
+        logger.info(f"Creating new user: {user.username}")
         db = await get_database()
         
-        # Check if user already exists
-        if await db.users.find_one({"email": user.email}):
-            logger.warning(f"Attempt to create user with existing email: {user.email}")
-            raise HTTPException(status_code=400, detail="Email already registered")
+        # Check if username already exists
         if await db.users.find_one({"username": user.username}):
-            logger.warning(f"Attempt to create user with existing username: {user.username}")
-            raise HTTPException(status_code=400, detail="Username already taken")
+            logger.error(f"Username already exists: {user.username}")
+            raise HTTPException(status_code=400, detail="Username already registered")
         
-        # Hash the password
-        hashed_password = pwd_context.hash(user.password)
+        # Check if email already exists
+        if await db.users.find_one({"email": user.email}):
+            logger.error(f"Email already registered: {user.email}")
+            raise HTTPException(status_code=400, detail="Email already registered")
         
         # Create user document
-        user_dict = user.dict()
-        user_dict["password"] = hashed_password
-        user_dict["created_at"] = datetime.utcnow()
-        user_dict["updated_at"] = datetime.utcnow()
-        user_dict["role"] = "Student"  # Default role
-        user_dict["about"] = ""  # Default empty bio
-        user_dict["followers"] = []  # Initialize empty followers list
-        user_dict["following"] = []  # Initialize empty following list
-        user_dict["followers_count"] = 0
-        user_dict["following_count"] = 0
-        user_dict["current_streak"] = 0
-        user_dict["longest_streak"] = 0
-        user_dict["login_history"] = []
-        user_dict["last_login"] = None
+        user_doc = {
+            "username": user.username,
+            "email": user.email,
+            "password": get_password_hash(user.password),
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "followers": [],
+            "following": [],
+            "current_streak": 0,
+            "longest_streak": 0,
+            "last_login": None,
+            "login_history": []
+        }
         
         # Insert user into database
-        result = await db.users.insert_one(user_dict)
+        result = await db.users.insert_one(user_doc)
         logger.info(f"Successfully created user: {user.username}")
         
-        # Return user without password
-        return UserResponse(username=user.username, email=user.email)
+        # Get the created user with all fields
+        created_user = await db.users.find_one({"_id": result.inserted_id})
+        
+        # Return the user data
+        return UserResponse(
+            id=str(created_user["_id"]),
+            username=created_user["username"],
+            email=created_user["email"],
+            created_at=created_user["created_at"],
+            updated_at=created_user["updated_at"]
+        )
+        
+    except HTTPException as he:
+        logger.error(f"HTTP Exception during user creation: {str(he)}")
+        raise he
     except Exception as e:
         logger.error(f"Error creating user: {str(e)}")
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Error details: {e.__dict__ if hasattr(e, '__dict__') else 'No details available'}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/login")
@@ -483,4 +497,50 @@ async def get_user(username: str):
         return UserResponse(**user)
     except Exception as e:
         logger.error(f"Error fetching user: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
+
+@router.delete("/username/{username}")
+async def delete_user(username: str, current_user: dict = Depends(get_current_user)):
+    try:
+        logger.info(f"Starting account deletion for user: {username}")
+        logger.info(f"Current user from token: {current_user}")
+        
+        db = await get_database()
+        
+        # First, find the user by username
+        user = await db.users.find_one({"username": username})
+        if not user:
+            logger.error(f"User not found: {username}")
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        logger.info(f"Found user in database: {user}")
+        
+        # Ensure only the user can delete their own account
+        if user["username"] != current_user["username"]:
+            logger.error(f"Unauthorized deletion attempt. Current user: {current_user['username']}, Target user: {username}")
+            raise HTTPException(status_code=403, detail="Not authorized to delete this account")
+        
+        try:
+            # Delete the user
+            result = await db.users.delete_one({"_id": user["_id"]})
+            
+            if result.deleted_count == 0:
+                logger.error("No user was deleted")
+                raise HTTPException(status_code=500, detail="Failed to delete account")
+            
+            logger.info(f"Successfully deleted user account: {username}")
+            return {"message": "Account deleted successfully"}
+            
+        except Exception as db_error:
+            logger.error(f"Database error during deletion: {str(db_error)}")
+            logger.error(f"Database error type: {type(db_error)}")
+            raise HTTPException(status_code=500, detail=f"Database error: {str(db_error)}")
+        
+    except HTTPException as he:
+        logger.error(f"HTTP Exception during deletion: {str(he)}")
+        raise he
+    except Exception as e:
+        logger.error(f"Error deleting user: {str(e)}")
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Error details: {e.__dict__ if hasattr(e, '__dict__') else 'No details available'}")
+        raise HTTPException(status_code=500, detail=str(e)) 

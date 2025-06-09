@@ -6,6 +6,7 @@ import SignUp from '../SignUp/SignUp';
 import Profile from '../Profile/Profile';
 import Landing from '../Landing/Landing';
 import SignIn from '../SignIn/SignIn';
+import SignUpSuccess from '../SignUpSuccess/SignUpSuccess';
 import FAQ from '../FAQ/FAQ';
 import Settings from '../Settings/Settings';
 import Course from '../Course/Course';
@@ -47,6 +48,7 @@ function App() {
                             <Course />
                         </ProtectedRoute>
                     } />
+                    <Route path="/signup-success" element={<SignUpSuccess />} />
                 </Routes>
             </Router>
         </div>

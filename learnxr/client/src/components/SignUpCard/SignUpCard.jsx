@@ -23,68 +23,46 @@ export default function SignUpCard() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
-
-        // Validate form
-        if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
-            setError("All fields are required");
-            return;
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
-            return;
-        }
+        setError(null);
 
         try {
-            // First, create the user account
-            const signupResponse = await fetch("http://localhost:8000/api/users/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password
-                }),
-            });
-
-            const signupData = await signupResponse.json();
-
-            if (!signupResponse.ok) {
-                throw new Error(signupData.detail || "Failed to create account");
+            // Validate the data
+            if (!formData.username.trim()) {
+                throw new Error('Username is required');
+            }
+            if (!formData.email.trim()) {
+                throw new Error('Email is required');
+            }
+            if (!formData.password) {
+                throw new Error('Password is required');
+            }
+            if (formData.password !== formData.confirmPassword) {
+                throw new Error('Passwords do not match');
             }
 
-            // Then, automatically log in the user
-            const loginResponse = await fetch("http://localhost:8000/api/users/login", {
-                method: "POST",
+            // Create user
+            const response = await fetch('http://localhost:8000/api/users/', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: formData.email,
+                    username: formData.username.trim(),
+                    email: formData.email.trim(),
                     password: formData.password
-                }),
+                })
             });
 
-            const loginData = await loginResponse.json();
+            const data = await response.json();
 
-            if (!loginResponse.ok) {
-                throw new Error(loginData.detail || "Failed to log in");
+            if (!response.ok) {
+                throw new Error(data.detail || 'Failed to create account');
             }
 
-            // Store the token and user data
-            localStorage.setItem("token", loginData.access_token);
-            localStorage.setItem("user", JSON.stringify(loginData.user));
-            localStorage.setItem("tokenExpiration", new Date(Date.now() + 30 * 60 * 1000).toISOString());
-
-            // Trigger a storage event to update the header
-            window.dispatchEvent(new Event("storage"));
-
-            // Redirect to dashboard
-            navigate("/dashboard");
+            // Redirect to success page
+            navigate('/signup-success');
         } catch (err) {
+            console.error('Error creating account:', err);
             setError(err.message);
         }
     };
