@@ -4,6 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getUser } from "../../utils/auth";
 
 export default function Settings() {
+    const API = process.env.REACT_APP_API_URL;
+
     const { username } = useParams();
     const navigate = useNavigate();
     const [emailUpdates, setEmailUpdates] = useState(true);
@@ -22,7 +24,7 @@ export default function Settings() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/api/users/username/${username}`);
+                const response = await fetch(`${API}/api/users/username/${username}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -75,7 +77,7 @@ export default function Settings() {
                 about: formData.bio.trim()
             };
 
-            const response = await fetch(`http://localhost:8000/api/users/username/${username}`, {
+            const response = await fetch(`${API}/api/users/username/${username}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +109,7 @@ export default function Settings() {
                 throw new Error('Not authenticated');
             }
 
-            const response = await fetch(`http://localhost:8000/api/users/username/${username}`, {
+            const response = await fetch(`${API}/api/users/username/${username}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

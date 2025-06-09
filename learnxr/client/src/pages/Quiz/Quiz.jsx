@@ -4,6 +4,8 @@ import { getToken, isAuthenticated } from '../../utils/auth';
 import './Quiz.css';
 
 export default function Quiz() {
+    const API = process.env.REACT_APP_API_URL;
+
     const navigate = useNavigate();
     const { courseTitle } = useParams();
     const location = useLocation();
@@ -32,7 +34,7 @@ export default function Quiz() {
                 
                 const titleToUse = courseTitleFromState || courseTitle;
                 
-                const response = await fetch(`http://localhost:8000/api/courses/${encodeURIComponent(titleToUse)}`, {
+                const response = await fetch(`${API}/api/courses/${encodeURIComponent(titleToUse)}`, {
                     headers: {
                         'Authorization': `Bearer ${getToken()}`
                     }
@@ -105,7 +107,7 @@ export default function Quiz() {
                 throw new Error('Course information is missing');
             }
 
-            const response = await fetch(`http://localhost:8000/api/quizzes/${courseId}/submit`, {
+            const response = await fetch(`${API}/api/quizzes/${courseId}/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

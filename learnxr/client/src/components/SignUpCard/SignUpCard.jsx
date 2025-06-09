@@ -4,6 +4,7 @@ import "./SignUpCard.css";
 import Logo from "../../assets/LogoXR.png";
 
 export default function SignUpCard() {
+    const API = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
@@ -41,7 +42,7 @@ export default function SignUpCard() {
             }
 
             // Create user
-            const response = await fetch('http://localhost:8000/api/users/', {
+            const response = await fetch(`${API}/api/users/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

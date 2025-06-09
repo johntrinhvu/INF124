@@ -4,6 +4,7 @@ import Logo from "../../assets/LogoXR.png";
 import { useState } from "react";
 
 export default function SignInCard() {
+    const API = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: "",
@@ -30,7 +31,7 @@ export default function SignInCard() {
         }
 
         try {
-            const response = await fetch("http://localhost:8000/api/users/login", {
+            const response = await fetch(`${API}/api/users/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
