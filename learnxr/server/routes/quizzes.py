@@ -22,26 +22,19 @@ def convert_objectid_to_str(obj):
         return str(obj)
     return obj
 
-@router.get("/quizzes/accuracy")
-async def get_quiz_accuracy(current_user: dict = Depends(get_current_user)):
+@router.get("/quizzes/accuracy/{username}")
+async def get_quiz_accuracy(username: str):
     try:
-        logger.info(f"Fetching quiz accuracy for user {current_user['id']}")
-        
         db = await get_database()
-        user = await db.users.find_one({"_id": ObjectId(current_user["id"])})
+        # user = await db.users.find_one({"_id": ObjectId(current_user["id"])})
+        user = await db.users.find_one({"username": username})
+
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Get user's quiz accuracy records
         quiz_accuracy = user.get("quiz_accuracy", [])
-        
-        # Calculate overall stats
         total_quizzes = user.get("total_quizzes_completed", 0)
         average_score = user.get("average_score", 0)
-        
-        logger.info(f"Found {len(quiz_accuracy)} quiz accuracy records")
-        logger.info(f"Total quizzes completed: {total_quizzes}")
-        logger.info(f"Average score: {average_score}%")
         
         return {
             "quiz_accuracy": quiz_accuracy,

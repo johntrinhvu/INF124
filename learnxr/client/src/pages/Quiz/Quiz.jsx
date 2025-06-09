@@ -21,12 +21,8 @@ export default function Quiz() {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                // Decode the URL-friendly title back to the original title
                 const decodedTitle = decodeURIComponent(courseTitle).replace(/-/g, ' ');
-                console.log('Decoded course title:', decodedTitle);
-                console.log('Course title from state:', courseTitleFromState);
                 
-                // First verify the course exists
                 const courseResponse = await axios.get(`http://localhost:8000/api/courses`);
                 const course = courseResponse.data.find(c => 
                     c.title.toLowerCase() === decodedTitle.toLowerCase()
@@ -39,15 +35,11 @@ export default function Quiz() {
                     return;
                 }
 
-                console.log('Found course in database:', course);
-                
                 // Then fetch the quiz using the course title
                 const response = await axios.get(`http://localhost:8000/api/quizzes/${course.title}`);
-                console.log('Quiz response:', response.data);
                 setQuiz(response.data);
                 setError(null);
             } catch (error) {
-                console.error('Error fetching quiz:', error.response?.data || error.message);
                 setError(error.response?.data?.detail || 'Failed to load quiz. Please try again.');
             } finally {
                 setLoading(false);
@@ -55,10 +47,8 @@ export default function Quiz() {
         };
 
         if (courseTitle) {
-            console.log('Course title from URL:', courseTitle);
             fetchQuiz();
         } else {
-            console.error('No course title in URL');
             setError('No course selected');
             setLoading(false);
         }
@@ -102,8 +92,6 @@ export default function Quiz() {
                 formattedAnswers[index.toString()] = selectedAnswer;
             });
 
-            console.log('Submitting answers:', formattedAnswers);
-
             const response = await axios.post(
                 `http://localhost:8000/api/quizzes/${quiz.id}/submit`,
                 {
@@ -115,7 +103,6 @@ export default function Quiz() {
                     }
                 }
             );
-            console.log('Submit response:', response.data);
             setScore(response.data.score);
             setQuizCompleted(true);
         } catch (error) {

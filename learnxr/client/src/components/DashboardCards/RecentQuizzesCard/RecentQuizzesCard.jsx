@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getToken } from '../../../utils/auth';
+import { getToken, getUser } from '../../../utils/auth';
+import { useParams } from 'react-router-dom';
 import './RecentQuizzesCard.css';
 
 export default function RecentQuizzesCard() {
+    const { username: routeUsername } = useParams();
     const [quizData, setQuizData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,12 +14,15 @@ export default function RecentQuizzesCard() {
         const fetchQuizData = async () => {
             try {
                 const token = getToken();
+                const currentUser = getUser();
+                const username = currentUser?.username;
+
                 if (!token) {
                     setError('Not authenticated');
                     return;
                 }
 
-                const response = await axios.get('http://localhost:8000/api/quizzes/accuracy', {
+                const response = await axios.get(`http://localhost:8000/api/quizzes/accuracy/${username}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

@@ -174,10 +174,10 @@ export default function Profile() {
                     <div>
                         <h3 className="text-xl mb-2 font-semibold">Learning Stats</h3>
                         <div className="border-dashed border-2 border-gray-400 p-10 rounded-md text-center text-gray-400">
-                            <QuizAccuracyCard />
-                            <QuizzesCompletedCard />
+                            <QuizAccuracyCard username={username} />
+                            <QuizzesCompletedCard username={username} />
                             <div className="md:col-span-2">
-                                <CurrentStreakCard />
+                                <CurrentStreakCard username={username} />
                             </div>
                         </div>
                     </div>

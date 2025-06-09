@@ -1,9 +1,11 @@
 import "./QuizAccuracyCard.css"
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getToken } from '../../../utils/auth';
+import { getToken, getUser } from '../../../utils/auth';
+import { useParams } from 'react-router-dom';
 
 export default function QuizAccuracyCard() {
+    const { username: routeUsername } = useParams();
     const [quizData, setQuizData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,12 +14,15 @@ export default function QuizAccuracyCard() {
         const fetchQuizAccuracy = async () => {
             try {
                 const token = getToken();
+                const currentUser = getUser();
+                const username = routeUsername || currentUser?.username;
+
                 if (!token) {
                     setError('Not authenticated');
                     return;
                 }
 
-                const response = await axios.get('http://localhost:8000/api/quizzes/accuracy', {
+                const response = await axios.get(`http://localhost:8000/api/quizzes/accuracy/${username}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -34,7 +39,7 @@ export default function QuizAccuracyCard() {
         };
 
         fetchQuizAccuracy();
-    }, []);
+    }, [routeUsername]);
 
     if (loading) {
         return (

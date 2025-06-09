@@ -17,19 +17,14 @@ export default function Dashboard() {
 
     const fetchCourses = async () => {
         try {
-            console.log('Fetching fresh course data...');
-            // Add cache-busting parameter to ensure fresh data
             const response = await axios.get(`http://localhost:8000/api/courses?t=${Date.now()}`);
-            console.log('Fetched courses:', response.data);
             
             // Clear any existing courses before setting new ones
             setCourses([]);
             setCourses(response.data);
             setError(null);
         } catch (error) {
-            console.error('Error fetching courses:', error);
             setError('Failed to fetch courses. Please refresh the page.');
-            // Clear courses on error
             setCourses([]);
         } finally {
             setLoading(false);
@@ -39,18 +34,15 @@ export default function Dashboard() {
     useEffect(() => {
         const userData = getUser();
         setUser(userData);
-        // Fetch courses immediately
         fetchCourses();
         
         // Set up periodic refresh every 30 seconds
         const intervalId = setInterval(fetchCourses, 30000);
-        
-        // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
-    }, []); // Empty dependency array means this runs once on mount
+    }, []); 
 
     if (!user) {
-        return null; // or a loading state
+        return null; 
     }
 
     if (loading) {
@@ -71,7 +63,6 @@ export default function Dashboard() {
                         <p className="text-[#b0aaff]">No courses available</p>
                     ) : (
                         courses.map((course) => {
-                            console.log('Rendering course with ID:', course.id);
                             return (
                                 <CourseCard 
                                     key={course.id}

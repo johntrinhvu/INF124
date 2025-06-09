@@ -75,9 +75,6 @@ export default function Settings() {
                 about: formData.bio.trim()
             };
 
-            console.log('Sending update data:', updateData);
-            console.log('Current username:', username);
-
             const response = await fetch(`http://localhost:8000/api/users/username/${username}`, {
                 method: 'PUT',
                 headers: {
@@ -88,7 +85,6 @@ export default function Settings() {
             });
 
             const responseData = await response.json();
-            console.log('Server response:', responseData);
 
             if (!response.ok) {
                 throw new Error(responseData.detail || 'Failed to update profile');
@@ -100,7 +96,6 @@ export default function Settings() {
                 navigate(`/profile/${responseData.username}/settings`);
             }
         } catch (err) {
-            console.error('Error updating profile:', err);
             setError(err.message || 'An error occurred while updating your profile');
         }
     };

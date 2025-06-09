@@ -1,9 +1,11 @@
 import './CurrentStreakCard.css'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getToken } from '../../../utils/auth';
+import { getToken, getUser } from '../../../utils/auth';
+import { useParams } from 'react-router-dom';
 
 export default function CurrentStreakCard() {
+    const { username: routeUsername } = useParams();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,7 +14,8 @@ export default function CurrentStreakCard() {
         const fetchUserData = async () => {
             try {
                 const token = getToken();
-                console.log('Token:', token); // Debug log
+                const currentUser = getUser();
+                const username = routeUsername || currentUser?.username;
                 
                 if (!token) {
                     console.log('No token found'); // Debug log
@@ -20,23 +23,14 @@ export default function CurrentStreakCard() {
                     return;
                 }
 
-                console.log('Fetching user data...'); // Debug log
-                const response = await axios.get('http://localhost:8000/api/users/me', {
+                const response = await axios.get(`http://localhost:8000/api/users/username/${username}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                console.log('User data response:', response.data); // Debug log
-
                 setUserData(response.data);
                 setError(null);
             } catch (err) {
-                console.error('Error fetching user data:', err);
-                console.error('Error details:', {
-                    message: err.message,
-                    response: err.response?.data,
-                    status: err.response?.status
-                });
                 setError('Failed to load streak data');
             } finally {
                 setLoading(false);
@@ -44,7 +38,7 @@ export default function CurrentStreakCard() {
         };
 
         fetchUserData();
-    }, []);
+    }, [routeUsername]);
 
     if (loading) {
         return (
@@ -67,13 +61,9 @@ export default function CurrentStreakCard() {
         );
     }
 
-    console.log('Rendering with userData:', userData); // Debug log
-
     const currentStreak = userData?.current_streak || 0;
     const longestStreak = userData?.longest_streak || 0;
     const loginHistory = userData?.login_history || [];
-
-    console.log('Streak data:', { currentStreak, longestStreak, loginHistory }); // Debug log
 
     // Get the last 7 days of login history
     const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -89,8 +79,6 @@ export default function CurrentStreakCard() {
             entry.streak_count
         ])
     );
-
-    console.log('Streak map:', Object.fromEntries(streakMap)); // Debug log
 
     return (
         <div className="bg-[#242452] border-8 border-[#0F0D2D] rounded-[25px] text-white px-6 py-10 w-full">
