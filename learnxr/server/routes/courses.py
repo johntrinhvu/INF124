@@ -36,7 +36,20 @@ async def get_course(course_title: str):
         course = await db.courses.find_one({"title": {"$regex": f"^{course_title}$", "$options": "i"}})
         if not course:
             raise HTTPException(status_code=404, detail="Course not found")
-        return convert_objectid_to_str(course)
+        
+        # Convert ObjectId to string and ensure all fields are properly formatted
+        course_data = convert_objectid_to_str(course)
+        
+        # Ensure lessons are properly formatted
+        if "lessons" in course_data:
+            for lesson in course_data["lessons"]:
+                if "quiz" in lesson:
+                    for question in lesson["quiz"]:
+                        # Ensure correct_answer is an integer
+                        if isinstance(question.get("correct_answer"), str):
+                            question["correct_answer"] = int(question["correct_answer"])
+        
+        return course_data
     except HTTPException:
         raise
     except Exception as e:

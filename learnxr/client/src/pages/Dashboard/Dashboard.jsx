@@ -71,6 +71,7 @@ export default function Dashboard() {
                                     description={course.description}
                                     category={course.category}
                                     difficulty={course.difficulty}
+                                    lessons={course.lessons}
                                 />
                             );
                         })

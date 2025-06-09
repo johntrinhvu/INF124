@@ -74,51 +74,58 @@ async def get_quiz(course_title: str):
         logger.error(f"Error fetching quiz: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching quiz: {str(e)}")
 
-@router.post("/quizzes/{quiz_id}/submit")
-async def submit_quiz(quiz_id: str, submission: QuizSubmission, current_user: dict = Depends(get_current_user)):
+@router.post("/quizzes/{course_id}/submit")
+async def submit_quiz(course_id: str, submission: QuizSubmission, current_user: dict = Depends(get_current_user)):
     try:
-        logger.info(f"Received quiz submission for quiz {quiz_id}")
+        logger.info(f"Received quiz submission for course {course_id}")
         logger.info(f"Current user data: {current_user}")
         logger.info(f"Submission data: {submission.dict()}")
         
         db = await get_database()
-        quiz = await db.quizzes.find_one({"id": quiz_id})
-        if not quiz:
-            logger.error(f"Quiz not found: {quiz_id}")
-            raise HTTPException(status_code=404, detail="Quiz not found")
-        
-        logger.info(f"Found quiz: {quiz}")
-        
-        # Get course title from the quiz
-        course = await db.courses.find_one({"_id": ObjectId(quiz["course_id"])})
+        course = await db.courses.find_one({"_id": ObjectId(course_id)})
         if not course:
-            logger.error(f"Course not found for quiz {quiz_id}")
+            logger.error(f"Course not found: {course_id}")
             raise HTTPException(status_code=404, detail="Course not found")
         
         logger.info(f"Found course: {course['title']}")
         
         # Calculate score
         correct_answers = 0
-        total_questions = len(quiz["questions"])
-        logger.info(f"Total questions in quiz: {total_questions}")
+        total_questions = 0
         
-        for question_index, submitted_answer in submission.answers.items():
-            question = quiz["questions"][int(question_index)]
-            correct_answer = question["correct_answer"]
-            
-            logger.info(f"\nQuestion {question_index}:")
-            logger.info(f"Submitted answer: {submitted_answer}")
-            logger.info(f"Correct answer: {correct_answer}")
-            logger.info(f"Options: {question['options']}")
-            
-            # Compare answers case-insensitively and trim whitespace
-            if submitted_answer.strip().lower() == correct_answer.strip().lower():
-                correct_answers += 1
-                logger.info("Answer is correct!")
-            else:
-                logger.info("Answer is incorrect")
+        # Count total questions across all lessons
+        for lesson in course.get("lessons", []):
+            if "quiz" in lesson:
+                total_questions += len(lesson["quiz"])
         
-        score = (correct_answers / total_questions) * 100
+        logger.info(f"Total questions in course: {total_questions}")
+        
+        # Process each answer
+        for q_idx_str, selected_ans_idx in submission.answers.items():
+            q_idx = int(q_idx_str)
+            lesson_number = (q_idx // 5) + 1  # Calculate lesson number based on question index
+            question_index = q_idx % 5  # Get question index within the lesson
+            
+            # Find the corresponding lesson and question
+            for lesson in course.get("lessons", []):
+                if lesson.get("lesson_number") == lesson_number and "quiz" in lesson:
+                    if question_index < len(lesson["quiz"]):
+                        question = lesson["quiz"][question_index]
+                        correct_answer_index = question["correct_answer"]
+                        
+                        logger.info(f"\nQuestion {q_idx}:")
+                        logger.info(f"Submitted answer index: {selected_ans_idx}")
+                        logger.info(f"Correct answer index: {correct_answer_index}")
+                        logger.info(f"Options: {question['options']}")
+                        
+                        if selected_ans_idx == correct_answer_index:
+                            correct_answers += 1
+                            logger.info("Answer is correct!")
+                        else:
+                            logger.info("Answer is incorrect")
+                    break
+        
+        score = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
         logger.info(f"\nFinal score calculation:")
         logger.info(f"Correct answers: {correct_answers}")
         logger.info(f"Total questions: {total_questions}")
@@ -126,10 +133,10 @@ async def submit_quiz(quiz_id: str, submission: QuizSubmission, current_user: di
         
         # Create quiz accuracy record
         quiz_accuracy = QuizAccuracy(
-            quiz_id=quiz_id,
+            quiz_id=course_id,
             course_title=course["title"],
             score=score,
-            answers=submission.answers
+            answers={str(k): str(v) for k, v in submission.answers.items()}  # Convert both keys and values to strings
         )
         
         # Get current user data for stats calculation

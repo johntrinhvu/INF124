@@ -25,24 +25,16 @@ class Quiz(BaseModel):
     class Config:
         from_attributes = True
 
-class QuizSubmission(BaseModel):
-    answers: Dict[str, str] = Field(
-        description="Maps question index (as string) to selected answer text (as string)",
-        example={
-            "0": "To execute instructions and process data",
-            "1": "RAM"
-        }
-    )
+class QuizAnswer(BaseModel):
+    selectedAnswer: str
+    lessonNumber: int
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "answers": {
-                    "0": "To execute instructions and process data",
-                    "1": "RAM"
-                }
-            }
-        }
+class QuizSubmission(BaseModel):
+    answers: Dict[str, int] = Field(
+        ...,
+        description="Maps question index (as string) to selected answer index (as integer)",
+        example={ "0": 2, "1": 0 }
+    )
 
     @validator('answers')
     def validate_answers(cls, v):

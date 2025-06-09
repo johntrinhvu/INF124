@@ -1,5 +1,24 @@
+export const getToken = () => {
+    return localStorage.getItem("token");
+};
+
+export const setToken = (token) => {
+    localStorage.setItem("token", token);
+};
+
+export const setTokenExpiration = (expiresIn) => {
+    const expirationTime = new Date().getTime() + expiresIn * 1000;
+    localStorage.setItem("tokenExpiration", expirationTime.toString());
+};
+
+export const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("tokenExpiration");
+    localStorage.removeItem("user");
+};
+
 export const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     const expirationTime = localStorage.getItem("tokenExpiration");
     
     if (!token || !expirationTime) {
@@ -17,19 +36,13 @@ export const isAuthenticated = () => {
     return true;
 };
 
-export const getToken = () => {
-    return localStorage.getItem("token");
-};
-
 export const getUser = () => {
     const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
 };
 
-export const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("tokenExpiration");
+export const setUser = (user) => {
+    localStorage.setItem("user", JSON.stringify(user));
 };
 
 export const getAuthHeader = () => {

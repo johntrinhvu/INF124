@@ -29,7 +29,22 @@ export default function Course() {
     }, [courseTitle]);
 
     const handleTakeQuiz = () => {
-        navigate(`/quizzes/${encodeURIComponent(courseTitle)}`);
+        if (!course || !course._id) {
+            console.error('Course data is missing:', course);
+            return;
+        }
+        
+        console.log('Navigating to quiz with course data:', {
+            title: course.title,
+            id: course._id
+        });
+        
+        navigate(`/quizzes/${encodeURIComponent(courseTitle)}`, {
+            state: {
+                courseTitle: course.title,
+                courseId: course._id
+            }
+        });
     };
 
     if (loading) {
@@ -93,7 +108,12 @@ export default function Course() {
                     <div className="space-y-6">
                         {course.lessons?.map((lesson, index) => (
                             <div key={index} className="bg-[#1E1B4B] rounded-lg p-6">
-                                <h3 className="text-xl font-semibold mb-3">{lesson.title}</h3>
+                                <div className="flex items-center mb-4">
+                                    <span className="w-8 h-8 bg-[#3b348b] rounded-full flex items-center justify-center mr-3 text-sm font-medium">
+                                        {lesson.lesson_number}
+                                    </span>
+                                    <h3 className="text-xl font-semibold">{lesson.title}</h3>
+                                </div>
                                 <p className="text-[#b0aaff] mb-4">{lesson.content}</p>
                                 {lesson.examples && (
                                     <div className="mt-4">
@@ -102,6 +122,18 @@ export default function Course() {
                                             <pre className="text-[#b0aaff] whitespace-pre-wrap">
                                                 {lesson.examples}
                                             </pre>
+                                        </div>
+                                    </div>
+                                )}
+                                {lesson.quiz && (
+                                    <div className="mt-6 border-t border-[#3b348b] pt-4">
+                                        <h4 className="text-lg font-medium mb-3">Lesson Quiz</h4>
+                                        <p className="text-[#b0aaff] mb-4">
+                                            This lesson includes a quiz with {lesson.quiz.length} questions to test your understanding.
+                                        </p>
+                                        <div className="bg-[#0F0D2D] rounded p-4">
+                                            <h5 className="font-medium mb-2">Sample Question:</h5>
+                                            <p className="text-[#b0aaff]">{lesson.quiz[0].question}</p>
                                         </div>
                                     </div>
                                 )}
@@ -116,8 +148,11 @@ export default function Course() {
                         onClick={handleTakeQuiz}
                         className="bg-[#b0aaff] text-[#0F0D2D] px-8 py-3 rounded-lg font-semibold hover:bg-[#9d93ff] transition-colors"
                     >
-                        Take Quiz Now
+                        Take Course Quiz
                     </button>
+                    <p className="text-[#b0aaff] mt-2 text-sm">
+                        Test your knowledge with {course.lessons?.reduce((total, lesson) => total + (lesson.quiz?.length || 0), 0)} questions
+                    </p>
                 </div>
             </div>
         </div>
