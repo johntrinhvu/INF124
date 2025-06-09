@@ -2,6 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 import logging
+from models.course import INITIAL_COURSES
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,4 +32,18 @@ async def get_database():
         return db
     except Exception as e:
         logger.error(f"Database error: {str(e)}")
+        raise
+
+async def initialize_courses():
+    try:
+        # Check if courses already exist
+        existing_courses = await db.courses.find().to_list(length=1)
+        if not existing_courses:
+            # Insert initial courses
+            result = await db.courses.insert_many(INITIAL_COURSES)
+            logger.info(f"Initialized {len(result.inserted_ids)} courses")
+        else:
+            logger.info("Courses already exist, skipping initialization")
+    except Exception as e:
+        logger.error(f"Error initializing courses: {str(e)}")
         raise 

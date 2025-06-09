@@ -6,42 +6,87 @@ import CurrentStreakCard from '../../components/DashboardCards/CurrentStreakCard
 import CourseCard from '../../components/DashboardCards/CourseCard/CourseCard';
 import { getUser } from '../../utils/auth';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function Dashboard() {
     const [user, setUser] = useState(null);
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchCourses = async () => {
+        try {
+            console.log('Fetching fresh course data...');
+            // Add cache-busting parameter to ensure fresh data
+            const response = await axios.get(`http://localhost:8000/api/courses?t=${Date.now()}`);
+            console.log('Fetched courses:', response.data);
+            
+            // Clear any existing courses before setting new ones
+            setCourses([]);
+            setCourses(response.data);
+            setError(null);
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+            setError('Failed to fetch courses. Please refresh the page.');
+            // Clear courses on error
+            setCourses([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const userData = getUser();
         setUser(userData);
-    }, []);
+        // Fetch courses immediately
+        fetchCourses();
+        
+        // Set up periodic refresh every 30 seconds
+        const intervalId = setInterval(fetchCourses, 30000);
+        
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []); // Empty dependency array means this runs once on mount
 
     if (!user) {
         return null; // or a loading state
+    }
+
+    if (loading) {
+        return <div className="bg-[#0F0D2D] min-h-screen pt-24 p-6 text-white">Loading courses...</div>;
     }
 
     return (
         <div className="bg-[#0F0D2D] min-h-screen pt-24 p-6 text-white">
             <h1 className="text-4xl mb-4">Dashboard</h1>
             <p className="text-3xl text-[#b0aaff] mb-6">Welcome, {user.username}</p>
-            <div className="pt-6">
-                <Link to="/quiz">
-                    <button className="bg-purple-500 hover:bg-purple-600 text-white text-xl font-semibold px-16 py-6 rounded transition" >
-                        Start a Quiz
-                    </button>
-                </Link>
-            </div>
-            <p className="text-3xl text-left px-2 py-1">Courses</p>
+            {error && (
+                <p className="text-red-500 mt-4">{error}</p>
+            )}
+            <p className="text-3xl text-left px-2 py-1 mt-8">Courses</p>
             <div className="relative p-2 z-0">
                 <div className="flex space-x-4 overflow-x-auto scrollbar-hide pr-16">
-                    <CourseCard />
-                    <CourseCard />
-                    <CourseCard />
-                    <CourseCard />
-                    <CourseCard />
+                    {courses.length === 0 ? (
+                        <p className="text-[#b0aaff]">No courses available</p>
+                    ) : (
+                        courses.map((course) => {
+                            console.log('Rendering course with ID:', course.id);
+                            return (
+                                <CourseCard 
+                                    key={course.id}
+                                    id={course.id}
+                                    title={course.title}
+                                    description={course.description}
+                                    category={course.category}
+                                    difficulty={course.difficulty}
+                                />
+                            );
+                        })
+                    )}
                 </div>
                 <div className="bg-gradient-to-r from-white/0 to-[#0F0D2D] pointer-events-none absolute right-0 top-0 h-full w-1/4 max-w-40 " />
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4 mt-8">
                 <QuizAccuracyCard />
                 <QuizzesCompletedCard />
                 <div className="md:col-span-2">
